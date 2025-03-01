@@ -1,50 +1,38 @@
 #include <iostream>
 #include <string>
 using namespace std;
- 
-string encryptVigenere(const string& plaintext, const string& key) {
-    string ciphertext;
-    int keyIndex = 0;
-    
-    for (char c : plaintext) {
-        if (isalpha(c)) {
-            char base = isupper(c) ? 'A' : 'a';
-            int shift = toupper(key[keyIndex % key.length()]) - 'A';
-            ciphertext += (c - base + shift) % 26 + base;
-            keyIndex++;
-        } else {
-            ciphertext += c;
+// 加密功能
+string myEncrypt(string text, string key) {
+    string newtext;  // 用来装结果 
+    int keynum = key.size(); // 钥匙长度   
+    // 逐个处理每个字母
+    for(int i=0; i<text.size(); i++){
+        char nowChar = text[i];  // 当前要处理的字母 
+        // 钥匙不够长就循环用
+        int keypos = i;
+        while(keypos >= keynum){
+            keypos = keypos - keynum; // 手动计算循环位置 
         }
-    }
-    return ciphertext;
-}
- 
-string decryptVigenere(const string& ciphertext, const string& key) {
-    string plaintext;
-    int keyIndex = 0;
-    
-    for (char c : ciphertext) {
-        if (isalpha(c)) {
-            char base = isupper(c) ? 'A' : 'a';
-            int shift = toupper(key[keyIndex % key.length()]) - 'A';
-            plaintext += (c - base - shift + 26) % 26 + base;
-            keyIndex++;
-        } else {
-            plaintext += c;
+        char nowKey = key[keypos];  
+        // 小写字母a-z对于的ASCII码为97-122，故减去97即可一一对应，如a=97，b=98，z=122等，所以a对应移动0位，b对应移动1位，以此类推 
+        int num1 = nowChar - 97;    // 字母转数字（a=0）
+        int num2 = nowKey - 97;     // 钥匙转数字 
+        int num3 = num1 + num2;     // 直接相加 
+        // 如果超过z就从头开始
+        if(num3 >=26){
+            num3 = num3 -26;
         }
+        newtext += char(num3 +97);  // 转回字母 
     }
-    return plaintext;
+    return newtext;
 }
- 
-int main() {
-    string text = "AttackAtDawn";
-    string key = "LEMON";
-    
-    string encrypted = encryptVigenere(text, key);
-    cout << "Encrypted: " << encrypted << endl;
-    
-    string decrypted = decryptVigenere(encrypted, key);
-    cout << "Decrypted: " << decrypted << endl;
-    
-    return 0;
+int main(){
+    string inputText, myKey;   
+    // 输入提示（带重复）
+    cout << "输入要加密的文字（小写）：";
+    cin >> inputText;
+    cout << "输入你的秘密钥匙（小写）：";
+    cin >> myKey;    
+    // 直接调用函数 
+    cout << "加密结果是：" << myEncrypt(inputText, myKey);
 }
